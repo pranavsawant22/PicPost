@@ -1,6 +1,6 @@
-# quiz_app
+# PicPost
 
-A new Flutter application which mak quiz
+A new Flutter application which you can use to post pics or write blogs!!
 
 ## Getting Started
 
