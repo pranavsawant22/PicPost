@@ -1,9 +1,12 @@
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:quiz_app/services/crud.dart';
 import 'package:quiz_app/views/Post.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:quiz_app/views/signin.dart';
+import 'package:toast/toast.dart';
 class Home extends StatefulWidget {
   String name;
   Home({this.name});
@@ -64,6 +67,7 @@ Widget PostList(){
         actions: <Widget>[
           GestureDetector(
           onTap: () {
+            Toastmaker("Successfully Logged out!", context);
    FirebaseAuth.instance.signOut();
    Navigator.pushReplacement(context, MaterialPageRoute(
      builder: (context)=>Signin()
@@ -141,4 +145,7 @@ class BlogTile extends StatelessWidget {
       ),
     );
   }
+}
+Toastmaker(String s,BuildContext context){
+  Toast.show("$s...",context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM);
 }

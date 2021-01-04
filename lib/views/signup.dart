@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quiz_app/helper/help.dart';
 import 'package:quiz_app/services/auth.dart';
 import 'package:quiz_app/views/home.dart';
 import 'package:quiz_app/views/signin.dart';
@@ -28,6 +29,8 @@ await authService.signupwithemailandpassword(email, pass, name).then((value){
     setState(() {
       isLoading = false;
     });
+    Helperfunction.saveUserLogIn(isLoggedIn: true);
+
     Navigator.pushReplacement(context, MaterialPageRoute(
         builder: (context)=>Home(name:name)
 
