@@ -13,7 +13,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool isLoggedIn = false;
+  bool _isLoggedIn = false;
   @override
   void initState() {
     checkuserstatus();
@@ -23,7 +23,9 @@ class _MyAppState extends State<MyApp> {
  checkuserstatus() async{
 
     Helperfunction.checkuserinfo().then((value){
-      isLoggedIn =  value;
+      setState(() {
+        _isLoggedIn =  value;
+      });
     });
  }
   @override
@@ -37,7 +39,7 @@ class _MyAppState extends State<MyApp> {
 
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: (isLoggedIn ?? false)?Home(name:"User"):Signin(),
+      home:  ( _isLoggedIn ?? false)?Home(name:"User"):Signin(),
     );
   }
 }

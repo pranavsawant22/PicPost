@@ -93,7 +93,7 @@ await authService.signupwithemailandpassword(email, pass, name).then((value){
                       hintText: "Email address",
                     ),
                     onChanged: (val)=>{
-                      email = val
+                      email = val.trim()
                     },
                   ),
                   SizedBox(height: 20),

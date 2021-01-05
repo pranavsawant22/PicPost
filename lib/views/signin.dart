@@ -94,7 +94,7 @@ SizedBox(height: 300),
             hintText: "Email address",
           ),
           onChanged: (val)=>{
-            email = val
+            email = val.trim()
           },
         ),
         SizedBox(height: 18),
@@ -126,7 +126,7 @@ SizedBox(height: 300),
             else return null;
           },
           onChanged: (val)=>{
-            pass = val
+            pass = val.trim()
           },
         ),
         SizedBox(height: 18,),

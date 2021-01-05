@@ -6,10 +6,12 @@ import 'package:flutter/widgets.dart';
 import 'package:quiz_app/services/crud.dart';
 import 'package:quiz_app/views/Post.dart';
 import 'package:quiz_app/views/signin.dart';
+import 'package:readmore/readmore.dart';
 import 'package:toast/toast.dart';
 class Home extends StatefulWidget {
   String name;
   Home({this.name});
+
   @override
   _HomeState createState() => _HomeState(name);
 }
@@ -17,26 +19,50 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   String name,name1;
+  int like=0;
 
+  bool hi = false;
+  _increment(int a,bool b){
+    a =a+1;
+    b = !b;
+  }
   Crudmethods crudmethods = new Crudmethods();
   Stream poststream ;
 Widget PostList(){
   return poststream!= null ? Container(
+    padding: EdgeInsets.only(top: 0,bottom: 30),
     child:StreamBuilder(
+
       stream: poststream,
-      builder: (context,snapshot){
-        return ListView.builder(
-        itemCount: snapshot.data.documents.length,
-  shrinkWrap: true,
-  itemBuilder: (context,index){
-  return BlogTile(
-  url: snapshot.data.documents[index].data["url"],
-  title: snapshot.data.documents[index].data["title"],
-  desc: snapshot.data.documents[index].data["desc"],
-  );
-  }
-  );
-  },
+      builder: (context,snapshot) {
+        if (snapshot.hasData) {
+          return ListView.builder(
+
+              itemCount: snapshot.data.documents.length,
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                print("object");
+                print(index);
+                return BlogTile(
+                  desc: snapshot.data.documents[index].data["desc"],
+                  name: snapshot.data.documents[index].data["name"],
+                  title: snapshot.data.documents[index].data["title"],
+                  url: snapshot.data.documents[index].data["url"],
+                  like: snapshot.data.documents[index].data["likes"],
+
+                );
+              }
+          );
+        }
+        else{
+return Container(
+  child: Center(
+    child: CircularProgressIndicator(),
+  ),
+);
+        }
+      }
+
     )
   ):Container(
     child: Center(
@@ -92,6 +118,7 @@ Widget PostList(){
         child: Icon(Icons.create),
         elevation: 0,
         onPressed: (){
+          Toastmaker("Post Successfully created!!", context);
           Navigator.push(context, MaterialPageRoute(
             builder: (context)=>CreatePost()
           ));
@@ -117,31 +144,82 @@ class MyShapeBorder extends ContinuousRectangleBorder {
     ..lineTo(rect.size.width, 0)
     ..close();
 }
-class BlogTile extends StatelessWidget {
-  String url,desc,title;
 
-  BlogTile({this.url,this.title,this.desc});
+class BlogTile extends StatefulWidget {
+  String url,desc,title,name;
+  int like=0;
+
+  bool hi = false;
+  _increment(int a,bool b){
+    a =a+1;
+    b = !b;
+  }
+  BlogTile({this.url,this.title,this.desc,this.name,this.like});
+
+  @override
+  _BlogTileState createState() => _BlogTileState();
+}
+
+class _BlogTileState extends State<BlogTile> {
+
   @override
   Widget build(BuildContext context) {
     return Container(
+padding: EdgeInsets.only(bottom:20),
       decoration: BoxDecoration(
-          border: Border.all(color: Colors.blueAccent)
+        color: Colors.white24,
+        borderRadius: BorderRadius.circular(35),
+          border: Border.all(color: Colors.black12)
       ),
-      child: Column(
+      child: Container(
+        padding: EdgeInsets.only(bottom: 20),
+        child: Column(
 
-        children: <Widget>[
-          ClipRRect(
+          children: <Widget>[
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                  '\n    ${widget.name}',
+                style: TextStyle(fontWeight: FontWeight.bold,fontSize: 17),
 
-              child: CachedNetworkImage(imageUrl:url,height: 500,width: 500,)),
+                textAlign: TextAlign.start,
+              ),
+            ),
+            ClipRRect(
 
-          Text(
-            '$title',style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 5,),
-          Text(
-            '$desc'
-          ),SizedBox(height: 15,),
-        ],
+                child: CachedNetworkImage(imageUrl:widget.url,height: 350,width: 350,),
+            borderRadius:BorderRadius.circular(20),),
+
+            Text(
+              '${widget.title}',style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 5,),
+            ReadMoreText('${widget.desc}',
+              trimLines: 3,
+              colorClickableText: Colors.blueAccent,
+
+              trimCollapsedText: '...Expand',
+              trimExpandedText: ' Collapse ',
+            ),SizedBox(height: 10,),
+           Column(
+             mainAxisAlignment: MainAxisAlignment.center,
+             children: <Widget>[
+
+                  Align(alignment: Alignment.center,
+                   child: GestureDetector(
+
+                         onTap: (){
+           },
+
+                       child: Icon(Icons.whatshot,size: 35,color: true?Colors.red:Colors.black54)),
+                 ),
+
+Text('${0}'),
+             ],
+           )
+
+          ],
+        ),
       ),
     );
   }

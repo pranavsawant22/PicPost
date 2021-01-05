@@ -1,11 +1,13 @@
 
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import "package:firebase_storage/firebase_storage.dart";
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:quiz_app/services/crud.dart';
 import 'package:random_string/random_string.dart';
+import 'package:toast/toast.dart';
 
 class CreatePost extends StatefulWidget {
   @override
@@ -14,8 +16,9 @@ class CreatePost extends StatefulWidget {
 
 class _CreatePostState extends State<CreatePost> {
   File _image;
+  int like = 0;
   String downloadUrl;
-  String title,desc;
+  String title,desc,name;
   Crudmethods crudmethods = new Crudmethods();
   final _formkey = GlobalKey<FormState>();
   bool _isLoading = false;
@@ -42,6 +45,7 @@ class _CreatePostState extends State<CreatePost> {
         });
       }
 Future uploadBlog() async {
+
     if (_image != null) {
       // upload the image
 
@@ -53,7 +57,7 @@ Future uploadBlog() async {
           .child("blogImages")
           .child("${randomAlphaNumeric(9)}.jpg");
 
-       StorageUploadTask task = await ref1.putFile(_image);
+       StorageUploadTask task =  ref1.putFile(_image);
 
       StorageTaskSnapshot taskSnapshot = await task.onComplete;
       String url = await taskSnapshot.ref.getDownloadURL();
@@ -61,12 +65,17 @@ Future uploadBlog() async {
 
 
 
-      Map<String,String> PostMap = {
+      Map<String,dynamic> PostMap = {
             "url":url,
-            "title":title,
-            "desc":desc
+            "title":title!=null?title:".",
+            "desc":desc!=null?desc:".",
+        "name":name,
+        "created":FieldValue.serverTimestamp(),
+        "likes":like
+
+
           };
-          crudmethods.addData(PostMap);
+          await crudmethods.addData(PostMap);
           setState(() {
             _isLoading = false;
           });
@@ -116,7 +125,7 @@ Future uploadBlog() async {
                 GestureDetector(
                   onTap: () {
                     uploadBlog();
-
+                    Toastmaker("Post Successfully created!!", context);
                   },
                   child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16),
@@ -172,9 +181,24 @@ Future uploadBlog() async {
                             ),
                           ),
                         ),
+                        TextFormField(
+                          onChanged: (val){
+                            if (val!=null)name=val;
+                            else name=".";
+
+                          },
+                          decoration: InputDecoration(
+                            hintText: "Author name",
+
+                          ),
+                        ),
 
                         TextFormField(
-                          onChanged: (val)=>title=val,
+                          onChanged: (val){
+                            if (val!=null)title=val;
+                            else title=".";
+
+                          },
                           decoration: InputDecoration(
                             hintText: "Post Title",
 
@@ -182,7 +206,10 @@ Future uploadBlog() async {
                         ),
 
                         TextFormField(
-                          onChanged: (val)=>desc=val,
+                          onChanged: (val){
+                            if (val!=null)desc=val;
+                            else desc=".";
+                          },
                           keyboardType: TextInputType.multiline,
                           maxLines: null,
                           decoration: InputDecoration(
@@ -190,7 +217,7 @@ Future uploadBlog() async {
                             hintText: "Post Description",
 
                           ),
-                        )
+                        ),
                       ],
                     ),
                 ),
@@ -201,3 +228,6 @@ Future uploadBlog() async {
         }
       }
 
+Toastmaker(String s,BuildContext context){
+  Toast.show("$s...",context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM);
+}
